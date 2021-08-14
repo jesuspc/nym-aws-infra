@@ -24,8 +24,16 @@ cp .environment-config.template.yml .environment-config.yml
 
 * Deploy
 
+Manually create an EC2 Key Pair in AWS called `baseServiceKey` and store the PEM file securely.
+
 Go to the corresponding stack folder and run:
 
 #+begin_src bash
 pnpm deploy
+#+end_src
+
+* SSH to a machine
+
+#+begin_src bash
+ssh -o ServerAliveInterval=10 -i <PATH_TO_baseServiceKey_PEM> ubuntu@<PUBLIC_IPV4_ADDRESS>
 #+end_src
