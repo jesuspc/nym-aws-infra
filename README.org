@@ -1,0 +1,31 @@
+#+TITLE: Nym AWS Infrastructure
+
+* Setup
+
+Install [[https://nixos.org/download.html][Nix]]
+
+Enter a nix-shell (or use [[https://direnv.net/][direnv]]):
+
+#+begin_src bash
+nix-shell
+#+end_src
+
+Install dependencies:
+
+#+begin_src bash
+pnpm run workspace--install
+#+end_src
+
+Create an .environment-config.yml file and fill in the placeholders with your AWS configuration
+
+#+begin_src bash
+cp .environment-config.template.yml .environment-config.yml
+#+end_src
+
+* Deploy
+
+Go to the corresponding stack folder and run:
+
+#+begin_src bash
+pnpm deploy
+#+end_src
