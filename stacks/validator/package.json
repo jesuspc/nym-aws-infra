@@ -1,0 +1,18 @@
+{
+  "name": "nym-validator",
+  "version": "1.0.0",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "license": "UNLICENSED",
+  "scripts": {
+    "deploy": "serverless deploy"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "serverless": "2.38.0",
+    "serverless-prune-plugin": "1.5.1"
+  }
+}

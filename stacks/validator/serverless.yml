@@ -1,0 +1,16 @@
+service: nym-validator
+
+frameworkVersion: '2'
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  profile: ${file(../../.environment-config.yml):provider.profile}
+  region: ${file(../../.environment-config.yml):provider.region}
+  stage: ${file(../../.environment-config.yml):provider.stage}
+  lambdaHashingVersion: 20201221
+
+functions:
+resources:
+  - ${file(resources/vpc.yml)}
+  - ${file(resources/ec2.yml)}

@@ -1,0 +1,131 @@
+---
+Resources:
+  ValidatorVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      EnableDnsHostnames: True
+      CidrBlock: "192.168.0.0/16"
+      Tags:
+        - Key: Name
+          Value: Validator VPC
+
+  ValidatorVPCSubnetA:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId:
+        Ref: ValidatorVPC
+      CidrBlock: "192.168.32.0/20"
+      MapPublicIpOnLaunch: True
+      AvailabilityZone:
+        Fn::Select:
+          - 0
+          - Fn::GetAZs: ""
+      Tags:
+        - Key: Name
+          Value: Validator VPC Public A
+
+  ValidatorVPCSubnetB:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId:
+        Ref: ValidatorVPC
+      CidrBlock: "192.168.16.0/20"
+      MapPublicIpOnLaunch: True
+      AvailabilityZone:
+        Fn::Select:
+          - 1
+          - Fn::GetAZs: ""
+      Tags:
+        - Key: Name
+          Value: Validator VPC Public B
+
+  ValidatorInternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: Validator Internet Gateway
+
+  ValidatorVPCGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId:
+        Ref: ValidatorVPC
+      InternetGatewayId:
+        Ref: ValidatorInternetGateway
+
+  ValidatorRouteTablePublic:
+    Type: AWS::EC2::RouteTable
+    DependsOn: [ValidatorInternetGateway]
+    Properties:
+      VpcId:
+        Ref: ValidatorVPC
+
+  ValidatorInternetRoutePublic:
+    Type: AWS::EC2::Route
+    DependsOn: [ValidatorVPCGatewayAttachment]
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId:
+        Ref: ValidatorInternetGateway
+      RouteTableId:
+        Ref: ValidatorRouteTablePublic
+
+  ValidatorVPCSubnetPublicARouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId:
+        Ref: ValidatorRouteTablePublic
+      SubnetId:
+        Ref: ValidatorVPCSubnetA
+
+  ValidatorVPCSubnetPublicBRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId:
+        Ref: ValidatorRouteTablePublic
+      SubnetId:
+        Ref: ValidatorVPCSubnetB
+
+  ValidatorSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: "Validator Security Group"
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+      SecurityGroupIngress:
+        - FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+          IpProtocol: tcp
+        - FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+          IpProtocol: tcp
+        - FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+          IpProtocol: tcp
+        - FromPort: 1317
+          ToPort: 1317
+          CidrIp: 0.0.0.0/0
+          IpProtocol: tcp
+        - FromPort: 26656
+          ToPort: 26656
+          CidrIp: 0.0.0.0/0
+          IpProtocol: tcp
+        - FromPort: 26660
+          ToPort: 26660
+          CidrIp: 0.0.0.0/0
+          IpProtocol: tcp
+        - FromPort: 8000
+          ToPort: 8000
+          CidrIp: 0.0.0.0/0
+          IpProtocol: tcp
+        - FromPort: 1790
+          ToPort: 1790
+          CidrIp: 0.0.0.0/0
+          IpProtocol: tcp
+      VpcId:
+        Ref: ValidatorVPC

@@ -1,0 +1,11 @@
+.DS_Store
+.idea
+*.log
+tmp/
+
+.environment-config.yml
+
+.serverless
+.envrc
+.direnv/
+node_modules/

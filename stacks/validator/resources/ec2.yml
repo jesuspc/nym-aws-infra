@@ -1,0 +1,66 @@
+---
+Resources:
+  Validator01EC2:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-0e66021c377d8c8b4
+      InstanceType: t2.micro
+      KeyName: baseServiceKey
+      # IamInstanceProfile:
+      #   Ref: ValidatorProfile
+      BlockDeviceMappings:
+        - DeviceName: "/dev/sdc"
+          Ebs:
+            VolumeSize: 35
+            VolumeType: gp2
+
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: True
+          DeleteOnTermination: True
+          DeviceIndex: 0
+          SubnetId:
+            Ref: ValidatorVPCSubnetA
+          GroupSet:
+            - Ref: ValidatorSecurityGroup
+      # UserData:
+      #   Fn::Base64:
+      #     Fn::Join: ["", ["#!/bin/bash\n", "echo ECS_CLUSTER=", { Ref: ValidatorECSCluster }, " >> /etc/ecs/ecs.config"]]
+
+  # ValidatorProfile:
+  #   Type: AWS::IAM::InstanceProfile
+  #   Properties:
+  #     InstanceProfileName: ValidatorProfile
+  #     Roles:
+  #       - Ref: ValidatorRole
+
+  # ValidatorRole:
+  #   Type: AWS::IAM::Role
+  #   Properties:
+  #     AssumeRolePolicyDocument:
+  #       Version: "2012-10-17"
+  #       Statement:
+  #         - Effect: "Allow"
+  #           Principal:
+  #             Service: ec2.amazonaws.com
+  #           Action: "sts:AssumeRole"
+  #     Policies:
+  #       - PolicyName: ValidatorECSClusterInstancePolicy
+  #         PolicyDocument:
+  #           Version: "2012-10-17"
+  #           Statement:
+  #             - Effect: Allow
+  #               Action:
+  #                 - ecs:CreateCluster
+  #                 - ecs:DeregisterContainerInstance
+  #                 - ecs:DiscoverPollEndpoint
+  #                 - ecs:Poll
+  #                 - ecs:RegisterContainerInstance
+  #                 - ecs:StartTelemetrySession
+  #                 - ecs:Submit*
+  #                 - ecr:GetAuthorizationToken
+  #                 - ecr:BatchCheckLayerAvailability
+  #                 - ecr:GetDownloadUrlForLayer
+  #                 - ecr:BatchGetImage
+  #                 - logs:CreateLogStream
+  #                 - logs:PutLogEvents
+  #               Resource: "*"
